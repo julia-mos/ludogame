@@ -27,3 +27,6 @@ node server.js, then run localhost:3000 on server machine or 𝑆𝑒𝑟𝑣�
 ## Authors
 - Julia Moś (https://github.com/julia-mos)
 - Artur Haluch (https://github.com/artiq6)
+
+## Screens
+![ScreenShot](../master/screens/ludo.PNG)
