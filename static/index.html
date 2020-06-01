@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="libs/semantic.js"></script>
+    <script src="libs/three.js"></script>
+    <script src="libs/OBJLoader.js"></script>
+    <script src="libs/OrbitControls.js"></script>
+    <script src="Settings.js"></script>
+    <script src="Net.js"></script>
+    <script src="UI.js"></script>
+    <script src="Game.js"></script>
+    <script src="Main.js"></script>
+    <link rel="stylesheet" href="libs/semantic.css">
+    <link rel="stylesheet" href="libs/icon.css">
+    <title>LUDO GAME</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #overly {
+            display: block;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.8);
+            position: absolute;
+        }
+
+        #menu {
+            position: fixed;            
+            width: 60%;
+            height: 50%;
+            border: 3px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.4);
+            text-align: center;
+            
+        }
+
+        h1,
+        h2,
+        h5 {
+            color: #ccc;
+        }
+
+        #menu h5 {
+            margin-top: -14px;
+        }
+
+        #menu input {
+            width: 90%;
+            height: 30px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid #ccc;
+            color: #ccc;
+            background-color: transparent;
+
+        }
+
+        #menu,
+        #waiting {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+        }
+
+        input:focus {
+            outline: 2px solid #21BA45;
+        }
+
+        #toggle {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 60vh;
+            height: 10vh;
+            /*set to a negative number 1/2 of your height*/
+            margin-left: -30vh;
+            margin-top: -1vh;
+            padding-top: 1vh;
+            /*set to a negative number 1/2 of your width*/
+            border: 3px solid #21BA45;
+            background-color: #f3f3f3;
+            text-align: center;
+            z-index: 2;
+        }
+
+        #waiting {
+            position: fixed;
+            width: 60%;
+            height: 30%;
+            border: 3px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.4);
+            text-align: center;
+            display: none;
+        }
+
+        #waiting h1 {
+            margin: 10px;
+        }
+
+        #waiting i {
+            font-size: 90px;
+            color: #ccc;
+        }
+
+
+        .btn {
+            margin-top: 2%;
+        }
+
+
+        #dice {
+            display: block;
+            width: 10%;
+            overflow: hidden;
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            bottom: 0;
+            left: 45%;
+        }
+
+        #dice:hover {
+            cursor: pointer;
+        }
+
+        #message {
+            position: absolute;
+            z-index: 2;
+            width: 90%;
+            margin-left: 5%;
+            margin-top: 1%;
+            transform: scale(0);
+            transition: transform 250ms ease-in-out;
+        }
+
+        #message .message {
+            border: 3px solid #ccc;
+            color: #ccc;
+            background-color: rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        i.close {
+            color: #ccc;
+        }
+
+        i.close:hover {
+            color: #ff0000;
+        }
+
+        #info {
+            position: absolute;
+            z-index: 3;
+            width: 90%;
+            margin: 3% 5% 1% 5%;
+            height: 90%;
+            overflow: auto;
+            transform: scale(0);
+            transition: transform 250ms ease-in-out;
+        }
+
+        #info .block {
+            border: 2px solid #ccc;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            color: #ccc;
+            background-color: rgba(0, 0, 0, 0.9);
+            text-align: center;
+        }
+
+        #info .message {
+            border: 3px solid #ccc;
+            color: #ccc;
+            background-color: rgba(0, 0, 0, 0.9);
+            text-align: center;
+        }
+
+        #info .message .header {
+            margin-top: 1%;
+        }
+
+        #info .sub {
+            margin-top: 1%;
+            border: none;
+            color: #ccc;
+            text-align: center;
+        }
+
+        b {
+            color: #21BA45;
+        }
+
+        #turnInfo {
+            position: absolute;
+            z-index: 3;
+            left: 1%;
+            bottom: 1%;
+        }
+
+        #turnInfo i {
+            color: #ccc;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #turnInfo i:hover {
+            color: #21ba45;
+            background: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        #win {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 60%;
+            height: 30%;
+            margin-top: -7.5%;
+            margin-left: -30%;
+            border: 3px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.9);
+            text-align: center;
+        }
+
+        #win h1 {
+            margin-top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="waiting">
+        <h1>Waiting for player number 2</h1><br>
+        <i class="notched circle loading icon"></i>
+    </div>
+    <div id="message">
+        <div class="ui black message">
+            <i class="close icon"></i>
+            <div id="mess" class="header">Communication with player</div>
+        </div>
+    </div>
+    <div id="turnInfo">
+        <i class="circular large info icon"></i>
+    </div>
+    <div id="info">
+        <div class="ui black message">
+            <i class="close icon"></i>
+            <!-- HISTORIA -->
+            <h1 class="ui block header">
+                <i class="clock icon"></i>HISTORY</h1>
+            <div class="sub header"><b>Ludo</b> - board game for 2, 3 or 4 players.
+                Game was invented basing on Indian game <u>pachisi</u> in Germany. Its author is Josef Friedrich
+                Schmidt.</div>
+            <div class="sub header">In the UK game is known as ludo.</div>
+            <!-- ZASADY -->
+            <h1 class="ui block header">
+                <i class="paragraph icon"></i>RULES</h1>
+            <div class="sub header">
+                <ul class="list">
+                    <li>Players take turns until they draw 6. Then the player moves the pawn into the starting field and
+                        throw the diece again.
+                        Then player can move the pawn on the board.
+                    </li>
+                    <li>A throw of 6 gives another turn.</li>
+
+                    <li>Pawns can jump over eachothers.</li>
+                    <li>
+                        If player go around the board, the pawn is safe in the "home".
+                    </li>
+                    <li><b>ENDING:</b> The player who wins, needs to put all of the 4 pawns into the "home".</li>
+                </ul>
+            </div>
+            <!-- TWÓRCY -->
+            <h1 class="ui block header">
+                <i class="users icon"></i>AUTHORS</h1>
+            <div class="sub header">
+                <b>HALUCH</b> ARTUR, <b>MOŚ</b> JULIA
+            </div>
+        </div>
+    </div>
+    <div id="menu">
+        <h1>WELCOME TO THE LUDO GAME</h1>
+        <h5>enjoy</h5>
+        <h2>LOGGING</h2>
+        <input type="text" id="value"><br>
+        <div class="btn">
+            <button id="login" class="massive ui inverted green basic button">LOGIN</button>
+            <button id="reset" class="massive ui inverted red basic button">RESET</button>
+        </div>
+    </div>
+    <div id="win" style="display: none;">
+
+    </div>
+
+    <img id="dice" src="dice/0.png">
+    <div id="root"></div>
+</body>
+
+</html>
