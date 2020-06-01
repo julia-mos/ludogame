@@ -23,6 +23,7 @@ node server.js, then run localhost:3000 on server machine or 𝑆𝑒𝑟𝑣�
 - Three.js
 - Node.js
 - MongoDB
+- socket.io
 
 ## Authors
 - Julia Moś (https://github.com/julia-mos)
