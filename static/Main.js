@@ -23,7 +23,7 @@ $(document).ready(function () {
     let pawnModel;
 
     let loader = new THREE.OBJLoader();
-    loader.load('pawn.obj', function (object) {
+    loader.load('pawn.obj',  (object) =>{
         object = object.children[0];
         object.scale.set(5, 5, 5)
         object.material = RedPawnMaterial
@@ -42,22 +42,22 @@ $(document).ready(function () {
     scene = new THREE.Scene();
 
 
-    var width = $(window).width();
-    var height = $(window).height();
+    const width = $(window).width();
+    const height = $(window).height();
 
-    var camera = new THREE.PerspectiveCamera(
+    let camera = new THREE.PerspectiveCamera(
         45,
         width / height,
         0.1,
         11000
     );
-    $(window).resize(function () {
+    $(window).resize( () =>{
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    let renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000);
     renderer.setSize(width, height);
 
@@ -93,10 +93,8 @@ $(document).ready(function () {
     /////////////
 
 
-    console.log(bluePawns)
-
     let orbitControl = new THREE.OrbitControls(camera, renderer.domElement);
-    orbitControl.addEventListener('change', function () {
+    orbitControl.addEventListener('change',  () =>{
         renderer.render(scene, camera)
         this.minDistance = 500;
         this.maxDistance = 1900;
@@ -116,7 +114,7 @@ $(document).ready(function () {
 
 
 
-    window.playgame = async function () {
+    window.playgame = async () => {
         myColor = net.myColor;
 
         bluePawns = game.bluePawns
@@ -129,7 +127,7 @@ $(document).ready(function () {
 
         console.log("COLOR: " + myColor)
 
-        client.on("synch", function (data) {
+        client.on("synch",  (data) => {
             scene.getObjectByProperty("_name", data.name).position.set(data.posx, 0, data.posz)
             scene.getObjectByProperty("_name", data.name)._posonmap = data.onmap;
             scene.getObjectByProperty("_name", data.name).scale.set(5, 5, 5);
@@ -151,7 +149,7 @@ $(document).ready(function () {
             }
         })
 
-        client.on("chturn", function (data) {
+        client.on("chturn",  (data) => {
             currentTurn = data.turn;
             if (currentTurn == myColor) {
                 $("#dice").show();
@@ -167,33 +165,32 @@ $(document).ready(function () {
                 }
             }
         })
-        client.on("taken", function (data) {
+        client.on("taken",  (data) =>{
             ui.info("YOUR TURN")
             let takenPawn = scene.getObjectByProperty("_name", data.name)
             takenPawn.position.set(takenPawn._starterx, 0, takenPawn._starterz)
             takenPawn._posonmap = -1
         })
-        client.on("endgame", function (data) {
+        client.on("endgame",  () =>{
             $("#win").transition('scale')
             $("#win").html("<h1><i style='color:red' class='thumbs down icon'></i>YOU LOST<i style='color:red' class='thumbs down icon'></i></h1>")
             $(document).off("mousedown")
             $(document).off("mouseover")
         })
-        client.on("small", function (data) {
+        client.on("small",  (data) =>{
             let pawn = scene.getObjectByProperty("_name", data.name)
-
             pawn.scale.set(3, 3, 3)
             pawn.position.set(data.posx, 0, data.posz)
         })
 
 
-        var raycaster2 = new THREE.Raycaster();
+        let raycaster2 = new THREE.Raycaster();
 
-        var mouseVector2 = new THREE.Vector2();
+        let mouseVector2 = new THREE.Vector2();
 
         let hovered = null;
 
-        $(document).on("mousemove", function (event) {
+        $(document).on("mousemove",  (event) =>{
             mouseVector2.x = (event.clientX / $(window).width()) * 2 - 1;
             mouseVector2.y = -(event.clientY / $(window).height()) * 2 + 1;
             raycaster2.setFromCamera(mouseVector2, camera);
@@ -238,7 +235,7 @@ $(document).ready(function () {
             }
 
         })
-        $(document).on("mousedown", function () {
+        $(document).on("mousedown",  () =>{
             drawnNumber = net.drawnNumber
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1;
@@ -285,7 +282,7 @@ $(document).ready(function () {
                             if (allPawns[i]._posonmap == 0 && allPawns[i]._name[0] == myColor[0].toUpperCase())
                                 onlyPawns.push(allPawns[i])
                         }
-                        console.log(onlyPawns)
+
                         for (let i = 0; i < onlyPawns.length; i++) {
                             if (onlyPawns[i]._name[0] == "B") {
                                 onlyPawns[i].position.x = bluePositions[onlyPawns[i]._posonmap].x
@@ -366,7 +363,7 @@ $(document).ready(function () {
                             turn = "blues"
                             intersects[0].object.position.x = redPositions[where].x
                             intersects[0].object.position.z = redPositions[where].z
-                            for (var i = 0; i < bluePawns.length; i++) {
+                            for (let i = 0; i < bluePawns.length; i++) {
                                 if ((bluePawns[i]._posonmap - 12 == intersects[0].object._posonmap && where < 12) || (bluePawns[i]._posonmap + 12 == intersects[0].object._posonmap && where >= 12)) {
                                     bluePawns[i].position.x = bluePawns[i]._starterx
                                     bluePawns[i].position.z = bluePawns[i]._starterz
@@ -399,7 +396,7 @@ $(document).ready(function () {
                             turn = "reds"
                             intersects[0].object.position.x = bluePositions[where].x
                             intersects[0].object.position.z = bluePositions[where].z
-                            for (var i = 0; i < redPawns.length; i++) {
+                            for (let i = 0; i < redPawns.length; i++) {
                                 if ((redPawns[i]._posonmap + 12 == intersects[0].object._posonmap && where >= 12) ||
                                     (redPawns[i]._posonmap - 12 == intersects[0].object._posonmap && where < 12)) {
                                     redPawns[i].position.x = redPawns[i]._starterx
@@ -475,7 +472,7 @@ $(document).ready(function () {
                             hovered=null;
                         }
                         let alonePawns = []
-                        console.log()
+
                         if (myColor == "reds") {
                             for (let i = 0; i < redPawns.length; i++) {
                                 if (redPawns[i]._posonmap == intersects[0].object._posonmap && redPawns[i]._posonmap != -100)
@@ -582,7 +579,7 @@ $(document).ready(function () {
     cube.position.y = -1000;
     scene.add(cube);
 
-    function endgame() {
+    let endgame=() =>{
         $(document).off("mousedown")
         $(document).off("mouseover")
         $("#win").transition('scale')
@@ -594,7 +591,7 @@ $(document).ready(function () {
     ///////////////////
 
 
-    function render() {
+    let render=()=>{
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
