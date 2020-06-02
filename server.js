@@ -77,24 +77,24 @@ const blues = [
 ]
 
 app.use(express.static('static'))
-http.listen(PORT, function () {
+http.listen(PORT,  () =>{
     console.log("server running at the port " + PORT)
 })
 
-mongoClient.connect("mongodb://localhost/ludo", function (err, db) {
+mongoClient.connect("mongodb://localhost/ludo",  (err, db) =>{
     if (err) console.log(err)
     else console.log("mongo connected!")
     db.collection("players").drop()
     db.collection("positions").drop()
-    db.createCollection("players", function (err, coll) {
+    db.createCollection("players",  (err, coll) =>{
         console.log("Created collection `players`")
     })
-    db.createCollection("positions", function (err, coll) {
-        coll.insert({ color: "RED", reds: JSON.stringify(reds) }, function (err, result) {
+    db.createCollection("positions",  (err, coll) =>{
+        coll.insert({ color: "RED", reds: JSON.stringify(reds) },  (err, result) =>{
             delete reds;
             console.log("Added positions of red pawns")
         });
-        coll.insert({ color: "BLUE", blues: JSON.stringify(blues) }, function (err, result) {
+        coll.insert({ color: "BLUE", blues: JSON.stringify(blues) },  (err, result) =>{
             delete blues;
             console.log("Added positions of blue pawns")
         });
@@ -102,38 +102,38 @@ mongoClient.connect("mongodb://localhost/ludo", function (err, db) {
     _db = db;
 })
 
-socketio.on('connection', function (client) {
+socketio.on('connection',  (client) =>{
     console.log("Client connected" + client.id)
 
     client.emit("onconnect", {
         clientName: client.id
     })
 
-    client.on("synch", function (data) {
+    client.on("synch",  (data) =>{
         console.log(data)
         client.broadcast.emit("synch", data)
     })
-    client.on("chturn", function (data) {
+    client.on("chturn",  (data) =>{
         console.log(data)
         client.broadcast.emit("chturn", data)
     })
-    client.on("taken", function (data) {
+    client.on("taken",  (data) =>{
         console.log(data)
         client.broadcast.emit("taken", data)
     })
-    client.on("endgame", function (data) {
+    client.on("endgame",  (data) =>{
         console.log(data)
         client.broadcast.emit("endgame", data)
     })
-    client.on("small", function (data) {
+    client.on("small", (data) =>{
         console.log(data)
         client.broadcast.emit("small", data)
     })
 });
 
 
-app.post("/", function (req, res) {
-    var finish = req.body;
+app.post("/",  (req, res) =>{
+    let finish = req.body;
 
     if (finish.action == "ADD_USER") {
         if (players.length == 2) {
@@ -143,8 +143,8 @@ app.post("/", function (req, res) {
             res.send("exists");
         }
         else {
-            var coll = _db.collection("players")
-            coll.insert({ login: finish.user }, function (err, result) {
+            let coll = _db.collection("players")
+            coll.insert({ login: finish.user },  (err, result) =>{
                 console.log("Added user " + finish.user + " to database")
             })
             players.push(finish.user);
@@ -160,18 +160,18 @@ app.post("/", function (req, res) {
         res.send(JSON.stringify(players, null, 4));
     }
     else if (finish.action == "GETSIZE") {
-        var co = Math.floor(Math.random() * 6 + 1)
+        let co = Math.floor(Math.random() * 6 + 1)
         res.send(co.toString())
     }
     else if (finish.action == "BLUE") {
-        var coll = _db.collection("positions")
-        coll.find({ color: "BLUE" }).toArray(function (err, items) {
+        let coll = _db.collection("positions")
+        coll.find({ color: "BLUE" }).toArray( (err, items) =>{
             res.end(JSON.stringify(items))
         });
     }
     else if (finish.action == "RED") {
-        var coll = _db.collection("positions")
-        coll.find({ color: "RED" }).toArray(function (err, items) {
+        let coll = _db.collection("positions")
+        coll.find({ color: "RED" }).toArray( (err, items) => {
             res.end(JSON.stringify(items))
         });
     }
