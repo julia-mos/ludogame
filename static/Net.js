@@ -13,7 +13,7 @@ class Net {
         this.scene;
         console.log("class Net constructor")
     }
-    addPlayer(name, resFunc) {
+    addPlayer=(name, resFunc) =>{
         let parent = this;
         $.ajax({
             url: "/",
@@ -22,9 +22,9 @@ class Net {
                 user: name,
             },
             type: "POST",
-            success: function (res) {
+            success: (res) =>{
                 console.log("server response:", res)
-                if (res == "exists") {
+                if(res == "exists") {
                     resFunc("<span style='color:red;'>Player with same nick already exists</span>")
                 }
                 else if (res == "overload") {
@@ -32,7 +32,7 @@ class Net {
                 }
                 else {
                     res = JSON.parse(res);
-                    $("#menu").toggle("slow", function () {});
+                    $("#menu").toggle("slow",  () =>{});
 
                     if (res.length == 1) {
                         resFunc("Player added: " + res[0])
@@ -50,7 +50,7 @@ class Net {
                         parent.myColor = "blues"
                         parent.playerColor = "black";
                     }
-                    parent.client.on("onconnect", function (data) {
+                    parent.client.on("onconnect",  (data) =>{
                         console.log(data.clientName)
                     })
 
@@ -58,12 +58,12 @@ class Net {
                 }
                 console.log("SERVER RECEIVED DATA")
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) =>{
                 console.log(xhr);
             },
         });
     }
-    removePlayers(resFunc) {
+    removePlayers=(resFunc)=> {
         let parent=this;
         $.ajax({
             url: "/",
@@ -71,18 +71,18 @@ class Net {
                 action: "RESET",
             },
             type: "POST",
-            success: function (res) {
+            success: (res) =>{
                 console.log("Server response:", res)
                 resFunc("RESET")
 
                 console.log("SERVER RECEIVED DATA")
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) =>{
                 console.log(xhr);
             },
         });
     }
-    checkPlayers() {
+    checkPlayers=() =>{
         let parent=this;
         $.ajax({
             url: "/",
@@ -90,7 +90,7 @@ class Net {
                 action: "CHECK",
             },
             type: "POST",
-            success: function (res) {
+            success: (res) => {
                 res = JSON.parse(res);
                 console.log("CHECKING NUMBER OF PLAYERS, currently: " + res.length)
                 if (res.length == 1) {
@@ -105,16 +105,14 @@ class Net {
 
                     $("#waiting").hide();
                 }
-                //czytamy odesłane z serwera dane
                 console.log("SERVER RECEIVED DATA")
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) => {
                 console.log(xhr);
             },
         });
     }
     dice() {
-        console.log("Zesraj sie")
         let parent = this
         $.ajax({
             url: "/",
@@ -122,7 +120,7 @@ class Net {
                 action: "GETSIZE",
             },
             type: "POST",
-            success: function (res) {
+            success:  (res) => {
                 if (parent.clicked == false) {
                     parent.clicked = true
                     let drawnNumber = res;
@@ -136,7 +134,7 @@ class Net {
 
                     if (drawnNumber != 6) {
                         let another = false;
-                        for (var i = 1; i < 5; i++) {
+                        for (let i = 1; i < 5; i++) {
                             if (parent.scene.getObjectByProperty("_name", (pname + i))._posonmap != -1 && 
                             parent.scene.getObjectByProperty("_name", (pname + i))._posonmap + parseInt(drawnNumber) <= 27 && 
                             parent.scene.getObjectByProperty("_name", (pname + i))._posonmap != -100) {
@@ -154,7 +152,7 @@ class Net {
                                 turn = "reds"
                                 parent.ui.info("<span style='color:red;'>RED</span> MOVES")
                             }
-                            setTimeout(function () {
+                            setTimeout(()=>{
                                 parent.client.emit("chturn", {
                                     turn: turn
                                 })
@@ -165,12 +163,12 @@ class Net {
                     }
                 }
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) => {
                 console.log(xhr);
             },
         });
     }
-    async getBluePositions() {
+    getBluePositions=async()=>{
         let pos;
         await $.ajax({
             url: "/",
@@ -178,17 +176,17 @@ class Net {
                 action: "BLUE",
             },
             type: "POST",
-            success: function (res) {
+            success:(res) =>{
                 let ob = JSON.parse(res)[0].blues
                 pos=JSON.parse(ob);
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) =>{
                 console.log(xhr);
             },
         });
         return pos;
     }
-    async getRedPositions() {
+    getRedPositions=async() =>{
         let pos;
         await $.ajax({
             url: "/",
@@ -196,17 +194,17 @@ class Net {
                 action: "RED",
             },
             type: "POST",
-            success: function (res) {
+            success: (res) =>{
                 let ob = JSON.parse(res)[0].reds
                 pos=JSON.parse(ob);
             },
-            error: function (xhr, status, error) {
+            error: (xhr, status, error) => {
                 console.log(xhr);
             },
         });
         return pos;
     }
-    getPlayerColor(){
+    getPlayerColor=()=>{
         return this.playerColor;
     }
 
