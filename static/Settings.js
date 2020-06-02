@@ -1,7 +1,7 @@
 class Grid {
     constructor() {
-        var geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
-        var material = new THREE.MeshBasicMaterial({
+        let geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50);
+        let material = new THREE.MeshBasicMaterial({
             color: 0x000000,
             side: THREE.DoubleSide,
             wireframe: true,
@@ -12,7 +12,7 @@ class Grid {
         this.grid.rotation.x = Math.PI / 2;
         this.grid.position.x = 50
     }
-    getGrid() {
+    getGrid=() =>{
         return this.grid;
     }
 }
